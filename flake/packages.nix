@@ -22,6 +22,17 @@
         inherit (nvfetcherSources.faugus-launcher) version src;
       };
 
+      helium-browser = pkgs.callPackage ../pkgs/helium-browser.nix {
+        version = builtins.getAttr system {
+          x86_64-linux = nvfetcherSources.helium-browser-x64-linux.version;
+          aarch64-linux = nvfetcherSources.helium-browser-arm64-linux.version;
+        };
+        src = builtins.getAttr system {
+          x86_64-linux = nvfetcherSources.helium-browser-x64-linux.src;
+          aarch64-linux = nvfetcherSources.helium-browser-arm64-linux.src;
+        };
+      };
+
       linux_cachyos-lto-v3 =
         (inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto.cachyOverride {
           cachyVars =

@@ -7,6 +7,14 @@ fetch.zip = "https://dawn.wine/dawn-winery/dwproton/releases/download/dwproton-$
 src.github = "Faugus/faugus-launcher"
 fetch.github = "Faugus/faugus-launcher"
 
+[helium-browser-x64-linux]
+src.github = "imputnet/helium-linux"
+fetch.zip = "https://github.com/imputnet/helium-linux/releases/download/$ver/helium-$ver-x86_64_linux.tar.xz"
+
+[helium-browser-arm64-linux]
+src.github = "imputnet/helium-linux"
+fetch.zip = "https://github.com/imputnet/helium-linux/releases/download/$ver/helium-$ver-arm64_linux.tar.xz"
+
 [nvfetcher]
 src.git = "https://github.com/thou-vow/nvfetcher"
 fetch.github = "thou-vow/nvfetcher"

@@ -5,43 +5,7 @@
   fetchzip,
   fetchFromGitHub,
   dockerTools,
-}:
-{
-  apple-emoji = {
-    pname = "apple-emoji";
-    version = "macos-26-20260613-f1fc560b";
-    src = fetchurl {
-      url = "https://github.com/samuelngs/apple-emoji-linux/releases/download/macos-26-20260613-f1fc560b/AppleColorEmoji-Linux.ttf";
-      sha256 = "sha256-uMjtl/ZCuJuko2o+CWYZ8IBdBswlrhEW5pU7mBQq4gw=";
-    };
-  };
-  brave-aarch64-linux = {
-    pname = "brave-aarch64-linux";
-    version = "1.92.141";
-    src = fetchurl {
-      url = "https://github.com/brave/brave-browser/releases/download/v1.92.141/brave-browser_1.92.141_arm64.deb";
-      sha256 = "sha256-FVzXaVpyfX+GIVofy3NfpE8rOH+9LjQpdEoEWQV0DqI=";
-    };
-  };
-  brave-x64-linux = {
-    pname = "brave-x64-linux";
-    version = "1.92.141";
-    src = fetchurl {
-      url = "https://github.com/brave/brave-browser/releases/download/v1.92.141/brave-browser_1.92.141_amd64.deb";
-      sha256 = "sha256-A87vCTtcyuNMPLaLYDjgyIm85zwAXNc3Z4ImtC9Kjek=";
-    };
-  };
-  discord-rpc-lsp = {
-    pname = "discord-rpc-lsp";
-    version = "1.0.1";
-    src = fetchFromGitHub {
-      owner = "zerootoad";
-      repo = "discord-rpc-lsp";
-      rev = "1.0.1";
-      fetchSubmodules = false;
-      sha256 = "sha256-1Zw+F/EfYjHHU0AYlAHT7g1sbuJrHRtGp9E1u9EPW8E=";
-    };
-  };
+}: {
   dwproton-x64-linux = {
     pname = "dwproton-x64-linux";
     version = "11.0-7";
@@ -52,68 +16,29 @@
   };
   faugus-launcher = {
     pname = "faugus-launcher";
-    version = "1.22.8";
+    version = "2.0.0";
     src = fetchFromGitHub {
       owner = "Faugus";
       repo = "faugus-launcher";
-      rev = "1.22.8";
+      rev = "2.0.0";
       fetchSubmodules = false;
-      sha256 = "sha256-2FsuD40u5O7VwbziTqhsfVyceyfmSRvdmsizfBy/Xys=";
+      sha256 = "sha256-VHf9hO984Q2nNHNVm8UqmZQypxKY8FSOzAHceliUhTA=";
     };
   };
-  graalvm-oracle-21-aarch64-linux = {
-    pname = "graalvm-oracle-21-aarch64-linux";
-    version = "21.0.11";
-    src = fetchurl {
-      url = "https://download.oracle.com/graalvm/21/archive/graalvm-jdk-21.0.11_linux-aarch64_bin.tar.gz";
-      sha256 = "sha256-hvxfORvjG53b5HNwtwUwPBpkm9eJFf/sz4x4pDDqy0w=";
+  helium-browser-arm64-linux = {
+    pname = "helium-browser-arm64-linux";
+    version = "0.14.7.1";
+    src = fetchzip {
+      url = "https://github.com/imputnet/helium-linux/releases/download/0.14.7.1/helium-0.14.7.1-arm64_linux.tar.xz";
+      sha256 = "sha256-L7MoE8q6o/V6z2ZHMks0I/aZLi94ybv+90VcHYL3dVc=";
     };
   };
-  graalvm-oracle-21-x64-linux = {
-    pname = "graalvm-oracle-21-x64-linux";
-    version = "21.0.11";
-    src = fetchurl {
-      url = "https://download.oracle.com/graalvm/21/archive/graalvm-jdk-21.0.11_linux-x64_bin.tar.gz";
-      sha256 = "sha256-Iw5TdqnDINwy9dnqSCEN4ztfzhbHWdRufPoiY8FzIRg=";
-    };
-  };
-  graalvm-oracle-25-aarch64-linux = {
-    pname = "graalvm-oracle-25-aarch64-linux";
-    version = "25.0.3";
-    src = fetchurl {
-      url = "https://download.oracle.com/graalvm/25/archive/graalvm-jdk-25.0.3_linux-aarch64_bin.tar.gz";
-      sha256 = "sha256-LG5e9jCExfOcZ8v1wz0jyFLfhI0QzVDXbmZ//5yc8rw=";
-    };
-  };
-  graalvm-oracle-25-x64-linux = {
-    pname = "graalvm-oracle-25-x64-linux";
-    version = "25.0.3";
-    src = fetchurl {
-      url = "https://download.oracle.com/graalvm/25/archive/graalvm-jdk-25.0.3_linux-x64_bin.tar.gz";
-      sha256 = "sha256-G1KWYTw9ElIdWU4cmTAt+I2OHwfXSreYPb9XIAC5LHw=";
-    };
-  };
-  helix-steel = {
-    pname = "helix-steel";
-    version = "8d189f46e9c620baa685bdfbe39b7c95928475a0";
-    src = fetchFromGitHub {
-      owner = "mattwparas";
-      repo = "helix";
-      rev = "8d189f46e9c620baa685bdfbe39b7c95928475a0";
-      fetchSubmodules = false;
-      sha256 = "sha256-qYR2f+uSUNsJYbbwSo9bCB+LI7n3NzQDCHXJRmHztDg=";
-    };
-    date = "2026-07-18";
-  };
-  noctalia = {
-    pname = "noctalia";
-    version = "v5.0.0-beta.3";
-    src = fetchFromGitHub {
-      owner = "noctalia-dev";
-      repo = "noctalia";
-      rev = "v5.0.0-beta.3";
-      fetchSubmodules = false;
-      sha256 = "sha256-8iAeWIjw2OMfsBCtaGcmR14lgBX0MOoaBaSyBwieBsA=";
+  helium-browser-x64-linux = {
+    pname = "helium-browser-x64-linux";
+    version = "0.14.7.1";
+    src = fetchzip {
+      url = "https://github.com/imputnet/helium-linux/releases/download/0.14.7.1/helium-0.14.7.1-x86_64_linux.tar.xz";
+      sha256 = "sha256-fJDwfUJChM9Fl7mckDKI7oIe5rG7+P11AdEkd+MlN3o=";
     };
   };
   nvfetcher = {
@@ -127,17 +52,6 @@
       sha256 = "sha256-9PQK8mnzZoMUHPsY7PcFP0WoqhlHZzxjpTPdB6H+TOg=";
     };
     date = "2026-06-08";
-  };
-  prismlauncher-cracked = {
-    pname = "prismlauncher-cracked";
-    version = "11.0.3";
-    src = fetchFromGitHub {
-      owner = "Diegiwg";
-      repo = "PrismLauncher-Cracked";
-      rev = "11.0.3";
-      fetchSubmodules = false;
-      sha256 = "sha256-pFIDOP03I76r14bXoKL7tEEaLlGFJ10MqMgGR4D/mvE=";
-    };
   };
   proton-cachyos-x64-linux = {
     pname = "proton-cachyos-x64-linux";
