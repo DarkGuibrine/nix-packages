@@ -18,7 +18,6 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
             accept-flake-config = true
-            build-dir = /tmp/nix-build
 
       - name: Checkout repository
         uses: actions/checkout@v4
