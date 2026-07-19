@@ -1,0 +1,31 @@
+[dwproton-x64-linux]
+src.webpage = "https://dawn.wine/dawn-winery/dwproton/releases"
+src.regex = 'dwproton-([\d.]+-\d+)-x86_64\.tar\.xz'
+fetch.zip = "https://dawn.wine/dawn-winery/dwproton/releases/download/dwproton-$ver/dwproton-$ver-x86_64.tar.xz"
+
+[faugus-launcher]
+src.github = "Faugus/faugus-launcher"
+fetch.github = "Faugus/faugus-launcher"
+
+[nvfetcher]
+src.git = "https://github.com/thou-vow/nvfetcher"
+fetch.github = "thou-vow/nvfetcher"
+
+[proton-cachyos-x64-linux]
+src.github = "CachyOS/proton-cachyos"
+src.prefix = "cachyos-"
+fetch.zip = "https://github.com/CachyOS/proton-cachyos/releases/download/cachyos-$ver/proton-cachyos-$ver-x86_64.tar.xz"
+
+[proton-cachyos-x64-linux-v3]
+src.github = "CachyOS/proton-cachyos"
+src.prefix = "cachyos-"
+fetch.zip = "https://github.com/CachyOS/proton-cachyos/releases/download/cachyos-$ver/proton-cachyos-$ver-x86_64_v3.tar.xz"
+
+[proton-ge-x64-linux]
+src.github = "GloriousEggroll/proton-ge-custom"
+src.prefix = "GE-Proton"
+fetch.zip = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton$ver/GE-Proton$ver.tar.gz"
+
+[treefmt-nix]
+src.git = "https://github.com/numtide/treefmt-nix"
+fetch.github = "numtide/treefmt-nix"

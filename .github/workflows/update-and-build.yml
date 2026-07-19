@@ -1,0 +1,59 @@
+name: Update sources and build cache
+on:
+  push:
+  schedule:
+    - cron: 0 */6 * * *
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: cache
+jobs:
+  update-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            accept-flake-config = true
+            build-dir = /tmp/nix-build
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Cachix
+        uses: cachix/cachix-action@v15
+        with:
+          name: darkguibrine
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Update sources
+        id: update
+        run: |
+          nix run .#nvfetcher
+          nix flake update
+          if git diff --quiet; then
+            echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            echo "updated=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and cache
+        run: |
+          nix run --inputs-from . nixpkgs#nix-fast-build -- \
+            --no-nom --skip-cached --fail-fast \
+            --cachix-cache darkguibrine \
+            --file ./ci-cache.nix
+
+      - name: Commit and push updates
+        if: steps.update.outputs.updated == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(deps): bump sources to $(date +%Y-%m-%dT%H:%MZ)"
+          git push
