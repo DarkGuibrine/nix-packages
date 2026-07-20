@@ -1,19 +1,13 @@
 name: Update sources and build cache
-
 on:
   push:
-    branches: [ main, master ]
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: 0 */6 * * *
   workflow_dispatch:
-
 permissions:
   contents: write
-
 concurrency:
   group: cache
-  cancel-in-progress: true
-
 jobs:
   update:
     runs-on: ubuntu-24.04
@@ -21,11 +15,11 @@ jobs:
       updated: ${{ steps.update.outputs.updated }}
     steps:
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v30
-
+        uses: nixbuild/nix-quick-install-action@v35
       - name: Checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update sources
         id: update
         run: |
@@ -33,21 +27,19 @@ jobs:
           nix flake update
           if git diff --quiet; then
             echo "unchanged"
-            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "updated=false" >> $GITHUB_OUTPUT
           else
             echo "changed"
-            echo "updated=true" >> "$GITHUB_OUTPUT"
+            echo "updated=true" >> $GITHUB_OUTPUT
           fi
-
       - name: Upload new lockfiles
         if: steps.update.outputs.updated == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: updated-lockfiles
           path: |
             flake.lock
             _sources/
-
   build:
     needs: update
     if: needs.update.outputs.updated == 'true' || github.event_name == 'push'
@@ -56,121 +48,66 @@ jobs:
       matrix:
         include:
           - runner: ubuntu-24.04
+          #- runner: ubuntu-24.04-arm
     steps:
-      - name: Reclaim space
+      - name: Reclaim space!
         uses: wimpysworld/nothing-but-nix@main
         with:
           hatchet-protocol: 'holster'
           nix-permission-edict: true
-
       - name: Get current month
         id: date
         run: echo "month=$(date +%Y-%m)" >> "$GITHUB_OUTPUT"
-
       - name: Restore and save Nix evaluation cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nix
           key: nix-eval-cache-${{ runner.os }}-${{ steps.date.outputs.month }}
-
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v30
+        uses: nixbuild/nix-quick-install-action@v35
         with:
           nix_conf: |
             build-dir = /nix/build
-
       - name: Ensure nix.conf exists
         run: sudo mkdir -p /etc/nix && sudo touch /etc/nix/nix.conf
-
       - name: Configure Cachix
-        uses: cachix/cachix-action@v15
+        uses: cachix/cachix-action@v17
         with:
           name: darkguibrine
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-
       - name: Checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Download new lockfiles
         if: needs.update.outputs.updated == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: updated-lockfiles
-          path: .
-
-      # TENTATIVA 1: Tenta buildar normalmente. Se falhar, não cancela o workflow ainda.
-      - name: Build cache (First Attempt)
-        id: build_1
-        continue-on-error: true
+      - name: Build cache
         run: |
           cachix watch-exec -m xz -l 9 darkguibrine -- \
             nix run --inputs-from . nixpkgs#nix-fast-build -- \
             --no-nom --skip-cached --fail-fast --file ./ci-cache.nix
-
-      # TENTATIVA 2: Só roda se a tentativa 1 falhar. Corrige o hash e tenta buildar de novo.
-      - name: Fix hashes and Retry Build
-        if: steps.build_1.outcome == 'failure'
-        run: |
-          echo "Primeiro build falhou. Tentando corrigir os hashes (vendorHash / cargoHash)..."
-          nix run github:DeterminateSystems/determinate-nixd -- fix hashes || true
-          
-          if ! git diff --quiet; then
-            echo "Hashes alterados! Criando o patch para o próximo job..."
-            git diff > hash-fix.patch
-          fi
-
-          echo "Rodando o build novamente com os hashes corrigidos..."
-          # Se este build falhar, o job falha de vez (é o comportamento padrão que queremos)
-          cachix watch-exec -m xz -l 9 darkguibrine -- \
-            nix run --inputs-from . nixpkgs#nix-fast-build -- \
-            --no-nom --skip-cached --fail-fast --file ./ci-cache.nix
-
-      - name: Upload fixed hashes patch
-        if: steps.build_1.outcome == 'failure'
-        uses: actions/upload-artifact@v4
-        with:
-          name: hash-fix
-          path: hash-fix.patch
-          if-no-files-found: ignore
-
   commit:
     needs: [update, build]
-    # Roda se houve atualização no nvfetcher, exigindo que o build tenha passado (mesmo que seja na 2ª tentativa)
     if: needs.update.outputs.updated == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Download new lockfiles
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: updated-lockfiles
-          path: .
-
-      - name: Download hash fixes (if any)
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: hash-fix
-          path: .
-
-      - name: Make commit and push
+      - name: Make commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          git add flake.lock _sources/
-          
-          # Aplica as correções de hash, se o patch foi gerado
-          if [ -f hash-fix.patch ]; then
-            git apply hash-fix.patch || true
-            git add *.nix
-          fi
-          
-          if ! git diff --staged --quiet; then
-            git commit -m "chore(deps): bump sources and auto-fix hashes to $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
-          fi
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(deps): bump sources to $(date +%Y-%m-%dT%H:%MZ)"
+          git push
