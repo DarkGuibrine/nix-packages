@@ -1,11 +1,16 @@
 {
   faugus-launcher,
+  gobject-introspection,
+  gtk4,
   lib,
+  libadwaita,
+  libmanette,
   lsfg-vk,
   python3Packages,
   umu-launcher,
   version,
   src,
+  wrapGAppsHook4,
 }:
 faugus-launcher.overrideAttrs {
   inherit version src;
@@ -17,7 +22,10 @@ faugus-launcher.overrideAttrs {
 
   buildInputs = (faugus-launcher.buildInputs or []) ++ [
     gtk4
+    libadwaita
+    libmanette
   ];
+
   postPatch = ''
     substituteInPlace faugus-launcher \
       --replace-fail "/usr/bin/python3" "${python3Packages.python.interpreter}"
