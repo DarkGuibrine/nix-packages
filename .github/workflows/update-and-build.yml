@@ -2,6 +2,7 @@ name: Update sources and build cache
 
 on:
   push:
+    branches: [ main, master ]
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
@@ -55,9 +56,8 @@ jobs:
       matrix:
         include:
           - runner: ubuntu-24.04
-          #- runner: ubuntu-24.04-arm
     steps:
-      - name: Reclaim space!
+      - name: Reclaim space
         uses: wimpysworld/nothing-but-nix@main
         with:
           hatchet-protocol: 'holster'
@@ -98,44 +98,45 @@ jobs:
           name: updated-lockfiles
           path: .
 
-      # Adicionado continue-on-error para não matar o job instantaneamente se a hash falhar
-      - name: Build cache
-        id: build_step
+      # TENTATIVA 1: Tenta buildar normalmente. Se falhar, não cancela o workflow ainda.
+      - name: Build cache (First Attempt)
+        id: build_1
         continue-on-error: true
         run: |
           cachix watch-exec -m xz -l 9 darkguibrine -- \
             nix run --inputs-from . nixpkgs#nix-fast-build -- \
             --no-nom --skip-cached --fail-fast --file ./ci-cache.nix
 
-      # Se o build falhar, roda a correção automática e gera um patch
-      - name: Fix hash mismatch automatically
-        if: steps.build_step.outcome == 'failure'
+      # TENTATIVA 2: Só roda se a tentativa 1 falhar. Corrige o hash e tenta buildar de novo.
+      - name: Fix hashes and Retry Build
+        if: steps.build_1.outcome == 'failure'
         run: |
-          echo "Build falhou! Tentando corrigir vendorHash / cargoHash..."
+          echo "Primeiro build falhou. Tentando corrigir os hashes (vendorHash / cargoHash)..."
           nix run github:DeterminateSystems/determinate-nixd -- fix hashes || true
           
           if ! git diff --quiet; then
-            echo "Hashes corrigidos! Criando patch..."
+            echo "Hashes alterados! Criando o patch para o próximo job..."
             git diff > hash-fix.patch
           fi
 
+          echo "Rodando o build novamente com os hashes corrigidos..."
+          # Se este build falhar, o job falha de vez (é o comportamento padrão que queremos)
+          cachix watch-exec -m xz -l 9 darkguibrine -- \
+            nix run --inputs-from . nixpkgs#nix-fast-build -- \
+            --no-nom --skip-cached --fail-fast --file ./ci-cache.nix
+
       - name: Upload fixed hashes patch
-        if: steps.build_step.outcome == 'failure'
+        if: steps.build_1.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: hash-fix
           path: hash-fix.patch
           if-no-files-found: ignore
 
-      # Agora sim falhamos o job de build para o GitHub mostrar o 'X' vermelho
-      - name: Enforce build failure
-        if: steps.build_step.outcome == 'failure'
-        run: exit 1
-
   commit:
     needs: [update, build]
-    # Roda sempre (mesmo se o build falhar para poder aplicar o patch), mas não se for cancelado
-    if: ${{ !cancelled() && needs.update.outputs.updated == 'true' }}
+    # Roda se houve atualização no nvfetcher, exigindo que o build tenha passado (mesmo que seja na 2ª tentativa)
+    if: needs.update.outputs.updated == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -163,14 +164,12 @@ jobs:
           
           git add flake.lock _sources/
           
-          # Se o patch foi gerado no job de build, aplica aqui
+          # Aplica as correções de hash, se o patch foi gerado
           if [ -f hash-fix.patch ]; then
             git apply hash-fix.patch || true
-            # Adiciona os arquivos .nix que tiveram os hashes atualizados
             git add *.nix
           fi
           
-          # Verifica se tem alguma coisa na staging area antes de commitar
           if ! git diff --staged --quiet; then
             git commit -m "chore(deps): bump sources and auto-fix hashes to $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
