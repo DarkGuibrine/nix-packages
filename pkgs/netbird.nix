@@ -4,6 +4,7 @@
   lib,
   stdenv,
   versionCheckHook,
+  installShellFiles,
   pkg-config,
   gtk3,
   libayatana-appindicator,
@@ -36,7 +37,7 @@ buildGoModule {
   pname = "netbird-${componentName}";
   inherit version src vendorHash;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ installShellFiles ] ++ lib.optional (componentName == "ui") [ pkg-config ];
 
   buildInputs = [
     gtk3
