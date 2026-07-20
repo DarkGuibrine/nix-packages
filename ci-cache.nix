@@ -1,12 +1,16 @@
 {system ? builtins.currentSystem}: let
-  packages = (import ./.).outputs.packages;
+  packages = (import ./.).outputs.packages.${system};
 in {
   inherit
-    (packages.${system})
-    faugus-launcher
-    hydralauncher
-    linux_cachyos-lto-v3
+    (packages)
     netbird
     netbird-ui
     ;
-}
+} // (if system == "x86_64-linux" then {
+  inherit
+    (packages)
+    faugus-launcher
+    hydralauncher
+    linux_cachyos-lto-v3
+    ;
+} else {})
