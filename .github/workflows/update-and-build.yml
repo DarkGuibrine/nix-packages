@@ -84,6 +84,30 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: updated-lockfiles
+      - name: Resolve Go vendor hashes
+        if: needs.update.outputs.updated == 'true'
+        id: resolve
+        run: |
+          FAKE_HASH="sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+          for attr in netbird netbird-ui; do
+            echo "::group::$attr"
+            output=$(nix build ".#$attr" --no-link 2>&1 || true)
+            real_hash=$(echo "$output" | grep -oP 'got:\s+\K\S+' | head -1 || true)
+            if [ -n "$real_hash" ]; then
+              echo "$attr: updating vendorHash -> $real_hash"
+              sed -i "s|$FAKE_HASH|$real_hash|g" flake/packages.nix
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$attr: vendorHash OK or build failed for other reason"
+            fi
+            echo "::endgroup::"
+          done
+      - name: Upload resolved hashes
+        if: steps.resolve.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: resolved-hashes
+          path: flake/packages.nix
       - name: Build cache
         run: |
           cachix watch-exec -m xz -l 9 darkguibrine -- \
@@ -102,6 +126,12 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: updated-lockfiles
+      - name: Download resolved hashes
+        uses: actions/download-artifact@v8
+        with:
+          name: resolved-hashes
+          path: flake/
+        continue-on-error: true
       - name: Make commit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -14,10 +14,12 @@
 
       netbird = pkgs.callPackage ../pkgs/netbird.nix {
         inherit (nvfetcherSources.netbird) version src;
+        vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
       };
 
       netbird-ui = pkgs.callPackage ../pkgs/netbird.nix {
         inherit (nvfetcherSources.netbird) version src;
+        vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
         componentName = "ui";
       };
 
