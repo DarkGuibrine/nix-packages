@@ -68,6 +68,8 @@ jobs:
         with:
           nix_conf: |
             build-dir = /nix/build
+      - name: Ensure nix.conf exists
+        run: sudo mkdir -p /etc/nix && sudo touch /etc/nix/nix.conf
       - name: Configure Cachix
         uses: cachix/cachix-action@v17
         with:
