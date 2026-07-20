@@ -25,6 +25,14 @@
       sha256 = "sha256-VHf9hO984Q2nNHNVm8UqmZQypxKY8FSOzAHceliUhTA=";
     };
   };
+  hydralauncher = {
+    pname = "hydralauncher";
+    version = "1.1.6";
+    src = fetchurl {
+      url = "https://github.com/hydralauncher/hydra/releases/download/v1.1.6/hydralauncher-1.1.6.AppImage";
+      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    };
+  };
   helium-browser-arm64-linux = {
     pname = "helium-browser-arm64-linux";
     version = "0.14.7.1";
@@ -39,6 +47,14 @@
     src = fetchzip {
       url = "https://github.com/imputnet/helium-linux/releases/download/0.14.7.1/helium-0.14.7.1-x86_64_linux.tar.xz";
       sha256 = "sha256-fJDwfUJChM9Fl7mckDKI7oIe5rG7+P11AdEkd+MlN3o=";
+    };
+  };
+  netbird = {
+    pname = "netbird";
+    version = "0.47.0";
+    src = fetchzip {
+      url = "https://github.com/netbirdio/netbird/archive/v0.47.0.tar.gz";
+      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     };
   };
   nvfetcher = {

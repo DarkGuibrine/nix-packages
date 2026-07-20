@@ -15,6 +15,16 @@ fetch.zip = "https://github.com/imputnet/helium-linux/releases/download/$ver/hel
 src.github = "imputnet/helium-linux"
 fetch.zip = "https://github.com/imputnet/helium-linux/releases/download/$ver/helium-$ver-arm64_linux.tar.xz"
 
+[hydralauncher]
+src.github = "hydralauncher/hydra"
+src.prefix = "v"
+fetch.url = "https://github.com/hydralauncher/hydra/releases/download/v$ver/hydralauncher-$ver.AppImage"
+
+[netbird]
+src.github = "netbirdio/netbird"
+src.prefix = "v"
+fetch.zip = "https://github.com/netbirdio/netbird/archive/v$ver.tar.gz"
+
 [nvfetcher]
 src.git = "https://github.com/thou-vow/nvfetcher"
 fetch.github = "thou-vow/nvfetcher"

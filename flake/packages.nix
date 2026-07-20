@@ -8,6 +8,21 @@
     ...
   }: {
     packages = {
+      hydralauncher = pkgs.callPackage ../pkgs/hydralauncher.nix {
+        inherit (nvfetcherSources.hydralauncher) version src;
+      };
+
+      netbird = pkgs.callPackage ../pkgs/netbird.nix {
+        inherit (nvfetcherSources.netbird) version src;
+        vendorHash = "";
+      };
+
+      netbird-ui = pkgs.callPackage ../pkgs/netbird.nix {
+        inherit (nvfetcherSources.netbird) version src;
+        vendorHash = "";
+        componentName = "ui";
+      };
+
       dwproton = pkgs.callPackage ../pkgs/proton-bin.nix {
         pname = "dwproton";
         version = builtins.getAttr system {
