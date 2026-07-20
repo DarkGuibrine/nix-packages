@@ -1,13 +1,19 @@
 name: Update sources and build cache
+
 on:
   push:
+    branches: [ main, master ]
   schedule:
-    - cron: 0 */6 * * *
+    - cron: '0 */6 * * *'
   workflow_dispatch:
+
 permissions:
   contents: write
+
 concurrency:
   group: cache
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-24.04
@@ -15,16 +21,17 @@ jobs:
       updated: ${{ steps.update.outputs.updated }}
     steps:
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v35
+        uses: nixbuild/nix-quick-install-action@v30
+
       - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/checkout@v4
+
       - name: Update sources
         id: update
         run: |
           nix run .#nvfetcher
           nix flake update
+          
           if git diff --quiet; then
             echo "unchanged"
             echo "updated=false" >> $GITHUB_OUTPUT
@@ -32,14 +39,16 @@ jobs:
             echo "changed"
             echo "updated=true" >> $GITHUB_OUTPUT
           fi
+
       - name: Upload new lockfiles
         if: steps.update.outputs.updated == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: updated-lockfiles
           path: |
             flake.lock
             _sources/
+
   build:
     needs: update
     if: needs.update.outputs.updated == 'true' || github.event_name == 'push'
@@ -48,66 +57,74 @@ jobs:
       matrix:
         include:
           - runner: ubuntu-24.04
-          #- runner: ubuntu-24.04-arm
     steps:
-      - name: Reclaim space!
+      - name: Reclaim space
         uses: wimpysworld/nothing-but-nix@main
         with:
           hatchet-protocol: 'holster'
           nix-permission-edict: true
+
       - name: Get current month
         id: date
         run: echo "month=$(date +%Y-%m)" >> "$GITHUB_OUTPUT"
+
       - name: Restore and save Nix evaluation cache
-        uses: actions/cache@v6
+        uses: actions/cache@v4
         with:
           path: ~/.cache/nix
           key: nix-eval-cache-${{ runner.os }}-${{ steps.date.outputs.month }}
+
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v35
+        uses: nixbuild/nix-quick-install-action@v30
         with:
           nix_conf: |
             build-dir = /nix/build
+
       - name: Ensure nix.conf exists
         run: sudo mkdir -p /etc/nix && sudo touch /etc/nix/nix.conf
+
       - name: Configure Cachix
-        uses: cachix/cachix-action@v17
+        uses: cachix/cachix-action@v15
         with:
           name: darkguibrine
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
       - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/checkout@v4
+
       - name: Download new lockfiles
         if: needs.update.outputs.updated == 'true'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: updated-lockfiles
+          path: . # Extrai os arquivos exatamente nas pastas onde devem ficar
+
       - name: Build cache
         run: |
           cachix watch-exec -m xz -l 9 darkguibrine -- \
             nix run --inputs-from . nixpkgs#nix-fast-build -- \
             --no-nom --skip-cached --fail-fast --file ./ci-cache.nix
+
   commit:
     needs: [update, build]
     if: needs.update.outputs.updated == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Download new lockfiles
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: updated-lockfiles
-      - name: Make commit
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: .
+
+      - name: Push commit
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "chore(deps): bump sources to $(date +%Y-%m-%dT%H:%MZ)"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add flake.lock _sources/
+          git commit -m "chore(deps): bump sources to $(date -u +%Y-%m-%dT%H:%MZ)"
           git push
