@@ -10,6 +10,14 @@
 faugus-launcher.overrideAttrs {
   inherit version src;
 
+  nativeBuildInputs = (faugus-launcher.nativeBuildInputs or []) ++ [
+    gobject-introspection
+    wrapGAppsHook4
+  ];
+
+  buildInputs = (faugus-launcher.buildInputs or []) ++ [
+    gtk4
+  ];
   postPatch = ''
     substituteInPlace faugus-launcher \
       --replace-fail "/usr/bin/python3" "${python3Packages.python.interpreter}"
