@@ -115,6 +115,9 @@ in
         --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}" \
         --set LD_LIBRARY_PATH "$out/lib/helium${lib.optionalString (libPath != "") ":${libPath}"}"
 
+      install -Dm644 helium.desktop $out/share/applications/helium.desktop
+      install -Dm644 product_logo_256.png $out/share/icons/hicolor/256x256/apps/helium.png
+
       if [ -d share ]; then
         cp -r share $out/
       fi

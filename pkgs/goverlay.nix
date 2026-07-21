@@ -49,6 +49,8 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
     HOME=$(mktemp -d) lazbuild --lazarusdir=${lazarus-qt6}/share/lazarus -B goverlay.lpi --bm=Release
+    HOME=$(mktemp -d) lazbuild --lazarusdir=${lazarus-qt6}/share/lazarus -B pascube_src/pascube.lpi --bm=Release
+    cp pascube_src/pascube ./pascube
     runHook postBuild
   '';
 
