@@ -37,11 +37,7 @@
         inherit (nvfetcherSources.faugus-launcher) version src;
       };
 
-      goverlay = pkgs.callPackage ../pkgs/goverlay.nix {
-        inherit (nvfetcherSources.goverlay) version src;
-      };
-
-      helium-browser = pkgs.callPackage ../pkgs/helium-browser.nix {
+helium-browser = pkgs.callPackage ../pkgs/helium-browser.nix {
         version = builtins.getAttr system {
           x86_64-linux = nvfetcherSources.helium-browser-x64-linux.version;
           aarch64-linux = nvfetcherSources.helium-browser-arm64-linux.version;
