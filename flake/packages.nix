@@ -48,6 +48,15 @@ helium-browser = pkgs.callPackage ../pkgs/helium-browser.nix {
         };
       };
 
+      linux_cachyos-lto-v3 =
+        (inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto.cachyOverride {
+          cachyVars =
+            inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto.kernel.cachyConfig.cachyVars
+            // {
+              _processor_opt = "GENERIC_V3";
+            };
+        }).kernel;
+
       nvfetcher = pkgs.nvfetcher.overrideAttrs {
         inherit (nvfetcherSources.nvfetcher) version src;
       };
