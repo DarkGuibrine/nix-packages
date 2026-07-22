@@ -5,7 +5,8 @@
   fetchzip,
   fetchFromGitHub,
   dockerTools,
-}: {
+}:
+{
   dwproton-x64-linux = {
     pname = "dwproton-x64-linux";
     version = "11.0-7";
@@ -16,21 +17,13 @@
   };
   faugus-launcher = {
     pname = "faugus-launcher";
-    version = "2.0.0";
+    version = "2.0.1";
     src = fetchFromGitHub {
       owner = "Faugus";
       repo = "faugus-launcher";
-      rev = "2.0.0";
+      rev = "2.0.1";
       fetchSubmodules = false;
-      sha256 = "sha256-VHf9hO984Q2nNHNVm8UqmZQypxKY8FSOzAHceliUhTA=";
-    };
-  };
-  hydralauncher = {
-    pname = "hydralauncher";
-    version = "1.1.6";
-    src = fetchurl {
-      url = "https://github.com/hydralauncher/hydra/releases/download/v1.1.6/hydralauncher-1.1.6.AppImage";
-      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      sha256 = "sha256-YyNnblFcoQ1wmsbFSJa1Swgu3jOPhbG4jAX9yaKQQAQ=";
     };
   };
   helium-browser-arm64-linux = {
@@ -49,12 +42,20 @@
       sha256 = "sha256-fJDwfUJChM9Fl7mckDKI7oIe5rG7+P11AdEkd+MlN3o=";
     };
   };
+  hydralauncher = {
+    pname = "hydralauncher";
+    version = "4.0.6";
+    src = fetchurl {
+      url = "https://github.com/hydralauncher/hydra/releases/download/v4.0.6/hydralauncher-4.0.6.AppImage";
+      sha256 = "sha256-LQ2z8yUUhKLs98YvHHLnhqqtcJFGIvEQ19kB5l0Ti9E=";
+    };
+  };
   netbird = {
     pname = "netbird";
-    version = "0.47.0";
+    version = "0.74.7";
     src = fetchzip {
-      url = "https://github.com/netbirdio/netbird/archive/v0.47.0.tar.gz";
-      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      url = "https://github.com/netbirdio/netbird/archive/v0.74.7.tar.gz";
+      sha256 = "sha256-Rmi54gS1yOlbBYUUit49p5WwnhfwPd/G5Wq209Wdv/4=";
     };
   };
   nvfetcher = {
@@ -71,18 +72,18 @@
   };
   proton-cachyos-x64-linux = {
     pname = "proton-cachyos-x64-linux";
-    version = "11.0-20260702-slr";
+    version = "11.0-20260703-slr";
     src = fetchzip {
-      url = "https://github.com/CachyOS/proton-cachyos/releases/download/cachyos-11.0-20260702-slr/proton-cachyos-11.0-20260702-slr-x86_64.tar.xz";
-      sha256 = "sha256-ZyyhEf6NcW7MzswWAlMdE4Ok8KnBOmB81yvu8ZwVxl4=";
+      url = "https://github.com/CachyOS/proton-cachyos/releases/download/cachyos-11.0-20260703-slr/proton-cachyos-11.0-20260703-slr-x86_64.tar.xz";
+      sha256 = "sha256-jOcPeEkBBPPNqyjXBoHm1Nk8AexPiLhx5+385NjUPT0=";
     };
   };
   proton-cachyos-x64-linux-v3 = {
     pname = "proton-cachyos-x64-linux-v3";
-    version = "11.0-20260702-slr";
+    version = "11.0-20260703-slr";
     src = fetchzip {
-      url = "https://github.com/CachyOS/proton-cachyos/releases/download/cachyos-11.0-20260702-slr/proton-cachyos-11.0-20260702-slr-x86_64_v3.tar.xz";
-      sha256 = "sha256-pbx/WDgpa55WDr1exD4rrNWsRoVkqHIUjzX1PJObxG8=";
+      url = "https://github.com/CachyOS/proton-cachyos/releases/download/cachyos-11.0-20260703-slr/proton-cachyos-11.0-20260703-slr-x86_64_v3.tar.xz";
+      sha256 = "sha256-8Y7orUvnFOG0zSqCrMyvmclmy3JInj7d8A2h0Y7RwhE=";
     };
   };
   proton-ge-x64-linux = {
