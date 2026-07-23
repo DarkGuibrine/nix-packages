@@ -120,7 +120,7 @@ buildGoModule {
       install -Dm644 "$src/client/ui/assets/netbird-systemtray-connected.png" "$out/share/icons/hicolor/256x256/apps/netbird.png"
       install -Dm644 "$src/client/ui/build/linux/netbird.desktop" "$out/share/applications/netbird.desktop"
       substituteInPlace $out/share/applications/netbird.desktop \
-        --replace-fail "Exec=/usr/bin/netbird-ui" "Exec=${component.binaryName}"
+        --replace-fail "/usr/bin/netbird-ui" "${component.binaryName}"
     '';
 
   nativeInstallCheckInputs = lib.optionals component.hasVersionCheck [
