@@ -27,12 +27,12 @@
             "name": null,
             "owner": "Faugus",
             "repo": "faugus-launcher",
-            "rev": "2.0.1",
-            "sha256": "sha256-YyNnblFcoQ1wmsbFSJa1Swgu3jOPhbG4jAX9yaKQQAQ=",
+            "rev": "2.0.2",
+            "sha256": "sha256-0knobTbMLOkRIGze+gHaee2Duq4ClMapTCzICX35A8s=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "2.0.1"
+        "version": "2.0.2"
     },
     "helium-browser-arm64-linux": {
         "cargoLock": null,
