@@ -37,7 +37,7 @@ buildGoModule {
   pname = "netbird-${componentName}";
   inherit version src vendorHash;
 
-  nativeBuildInputs = [ installShellFiles ] ++ lib.optional (componentName == "ui") [ pkg-config ];
+  nativeBuildInputs = [ installShellFiles ] ++ lib.optional (componentName == "ui") pkg-config;
 
   buildInputs = [
     gtk3
@@ -57,6 +57,31 @@ buildGoModule {
   ];
 
   doCheck = false;
+
+  # work around Go 1.24+ strict embed check in wails dependency:
+  # wails has //go:embed arm64/WebView2Loader.dll behind build constraint,
+  # but Go >=1.24 checks ALL embed patterns during vendor regardless of build tags.
+  modBuildPhase = ''
+    runHook preBuild
+
+    # download modules
+    go mod download
+
+    # create missing embed files in the wails module
+    moduleDir=$(go env GOMODCACHE)/$(go list -m -f '{{.Path}}@{{.Version}}' github.com/wailsapp/wails/v3 2>/dev/null || echo "github.com/wailsapp/wails/v3@v3.0.0-alpha2.117")
+    if [ -d "$moduleDir/internal/webview2/webviewloader" ]; then
+      chmod -R u+w "$moduleDir"
+      for arch in x86 x64 arm64; do
+        mkdir -p "$moduleDir/internal/webview2/webviewloader/$arch"
+        touch "$moduleDir/internal/webview2/webviewloader/$arch/WebView2Loader.dll"
+      done
+    fi
+
+    # vendor modules
+    go mod vendor
+
+    runHook postBuild
+  '';
 
   postPatch = ''
     substituteInPlace client/cmd/root.go \
@@ -78,7 +103,7 @@ buildGoModule {
     ''
     + lib.optionalString (stdenv.hostPlatform.isLinux && componentName == "ui") ''
       install -Dm644 "$src/client/ui/assets/netbird-systemtray-connected.png" "$out/share/icons/hicolor/256x256/apps/netbird.png"
-      install -Dm644 "$src/client/ui/build/netbird.desktop" "$out/share/applications/netbird.desktop"
+      install -Dm644 "$src/client/ui/build/linux/netbird.desktop" "$out/share/applications/netbird.desktop"
       substituteInPlace $out/share/applications/netbird.desktop \
         --replace-fail "Exec=/usr/bin/netbird-ui" "Exec=${component.binaryName}"
     '';

@@ -52,10 +52,10 @@
   };
   netbird = {
     pname = "netbird";
-    version = "0.74.7";
+    version = "0.75.0";
     src = fetchzip {
-      url = "https://github.com/netbirdio/netbird/archive/v0.74.7.tar.gz";
-      sha256 = "sha256-Rmi54gS1yOlbBYUUit49p5WwnhfwPd/G5Wq209Wdv/4=";
+      url = "https://github.com/netbirdio/netbird/archive/v0.75.0.tar.gz";
+      sha256 = "sha256-1nFpeOWkWZIajjQU1jlSjQoxq+lyvR+rlsAxSV0vJZc=";
     };
   };
   nvfetcher = {
