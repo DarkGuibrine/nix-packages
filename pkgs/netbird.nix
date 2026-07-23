@@ -7,10 +7,13 @@
   installShellFiles,
   pkg-config,
   gtk3,
+  gtk4,
   libayatana-appindicator,
+  libsoup_3,
   libx11,
   libxcursor,
   libxxf86vm,
+  webkitgtk_6_0,
   version,
   src,
   vendorHash,
@@ -45,6 +48,10 @@ buildGoModule {
     libx11
     libxcursor
     libxxf86vm
+  ] ++ lib.optionals (componentName == "ui") [
+    gtk4
+    libsoup_3
+    webkitgtk_6_0
   ];
 
   subPackages = [ component.subPackage ];
