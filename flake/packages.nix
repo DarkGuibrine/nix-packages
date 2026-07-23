@@ -6,9 +6,7 @@
     self',
     system,
     ...
-  }: let
-    isArm = lib.hasPrefix "aarch64" system;
-  in {
+  }: {
     packages = {
       hydralauncher = pkgs.callPackage ../pkgs/hydralauncher.nix {
         inherit (nvfetcherSources.hydralauncher) version src;
@@ -18,15 +16,12 @@
         inherit (nvfetcherSources.netbird) version src;
         vendorHash = "sha256-5urO9yKeRYM/z5YdLF2+NhbD9CWzGbB5tO37scBK5uo=";
       };
-    }
-    // lib.optionalAttrs (!isArm) {
+
       netbird-ui = pkgs.callPackage ../pkgs/netbird.nix {
         inherit (nvfetcherSources.netbird) version src;
         vendorHash = "sha256-5urO9yKeRYM/z5YdLF2+NhbD9CWzGbB5tO37scBK5uo=";
-        componentName = "ui";
+        componentName = if lib.hasPrefix "aarch64" system then "client" else "ui";
       };
-    }
-    // {
 
       dwproton = pkgs.callPackage ../pkgs/proton-bin.nix {
         pname = "dwproton";
