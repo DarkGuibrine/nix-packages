@@ -65,6 +65,10 @@ buildGoModule {
 
   doCheck = false;
 
+  preBuild = lib.optionalString (componentName == "ui") ''
+    export PKG_CONFIG_PATH="${gtk4.dev}/lib/pkgconfig:${webkitgtk_6_0.dev}/lib/pkgconfig:${libsoup_3.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
+  '';
+
   # work around Go 1.24+ strict embed check in wails dependency:
   # wails has //go:embed arm64/WebView2Loader.dll behind build constraint,
   # but Go >=1.24 checks ALL embed patterns during vendor regardless of build tags.
