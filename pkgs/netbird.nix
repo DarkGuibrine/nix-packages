@@ -62,7 +62,7 @@ buildGoModule {
     substituteInPlace client/cmd/root.go \
       --replace-fail 'unix:///var/run/netbird.sock' 'unix:///var/run/netbird/sock'
   '' + lib.optionalString (componentName == "ui") ''
-    substituteInPlace client/ui/client_ui.go \
+    substituteInPlace client/ui/grpc.go \
       --replace-fail 'unix:///var/run/netbird.sock' 'unix:///var/run/netbird/sock'
   '';
 
