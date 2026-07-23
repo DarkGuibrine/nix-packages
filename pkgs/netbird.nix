@@ -89,6 +89,10 @@ buildGoModule {
   '' + lib.optionalString (componentName == "ui") ''
     substituteInPlace client/ui/grpc.go \
       --replace-fail 'unix:///var/run/netbird.sock' 'unix:///var/run/netbird/sock'
+
+    # create placeholder frontend/dist for //go:embed all:frontend/dist
+    mkdir -p client/ui/frontend/dist
+    touch client/ui/frontend/dist/.gitkeep
   '';
 
   postInstall =
