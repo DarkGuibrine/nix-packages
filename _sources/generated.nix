@@ -28,18 +28,18 @@
   };
   helium-browser-arm64-linux = {
     pname = "helium-browser-arm64-linux";
-    version = "0.14.7.1";
+    version = "0.14.8.2";
     src = fetchzip {
-      url = "https://github.com/imputnet/helium-linux/releases/download/0.14.7.1/helium-0.14.7.1-arm64_linux.tar.xz";
-      sha256 = "sha256-L7MoE8q6o/V6z2ZHMks0I/aZLi94ybv+90VcHYL3dVc=";
+      url = "https://github.com/imputnet/helium-linux/releases/download/0.14.8.2/helium-0.14.8.2-arm64_linux.tar.xz";
+      sha256 = "sha256-PZXFVQEa7svZWwW+6haLtofjdQywKT1JtDqdICfCwoo=";
     };
   };
   helium-browser-x64-linux = {
     pname = "helium-browser-x64-linux";
-    version = "0.14.7.1";
+    version = "0.14.8.2";
     src = fetchzip {
-      url = "https://github.com/imputnet/helium-linux/releases/download/0.14.7.1/helium-0.14.7.1-x86_64_linux.tar.xz";
-      sha256 = "sha256-fJDwfUJChM9Fl7mckDKI7oIe5rG7+P11AdEkd+MlN3o=";
+      url = "https://github.com/imputnet/helium-linux/releases/download/0.14.8.2/helium-0.14.8.2-x86_64_linux.tar.xz";
+      sha256 = "sha256-wNsdkZIJGC2AtaoLsMAFVQ3MrkYOcwbUtbyfZkNhyTE=";
     };
   };
   hydralauncher = {
