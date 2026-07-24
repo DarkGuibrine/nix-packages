@@ -13,14 +13,6 @@
   };
 
   inputs = {
-    chaotic-nyx = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      inputs = {
-        flake-schemas.follows = "";
-        home-manager.follows = "";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
