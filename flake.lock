@@ -1,28 +1,5 @@
 {
   "nodes": {
-    "chaotic-nyx": {
-      "inputs": {
-        "flake-schemas": [],
-        "home-manager": [],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1784878151,
-        "narHash": "sha256-LrQAuO/DFFka3k9OBvtlBYLNucRPCwTcga7Mr94sup8=",
-        "owner": "chaotic-cx",
-        "repo": "nyx",
-        "rev": "c9fbc88dcd478668f29a8fdcc77975014f80ecbc",
-        "type": "github"
-      },
-      "original": {
-        "owner": "chaotic-cx",
-        "ref": "nyxpkgs-unstable",
-        "repo": "nyx",
-        "type": "github"
-      }
-    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -61,7 +38,6 @@
     },
     "root": {
       "inputs": {
-        "chaotic-nyx": "chaotic-nyx",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs"
       }
