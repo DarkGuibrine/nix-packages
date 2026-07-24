@@ -11,6 +11,5 @@ in {
     (packages)
     faugus-launcher
     hydralauncher
-    linux_cachyos-lto-v3
     ;
 } else {})
