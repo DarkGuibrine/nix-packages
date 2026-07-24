@@ -1,5 +1,6 @@
 {
   buildGoModule,
+  fetchFromGitHub,
   lib,
   stdenv,
   versionCheckHook,
@@ -34,13 +35,12 @@ let
     };
   };
   component = components.${componentName};
-  isUi = componentName == "ui";
 in
 buildGoModule {
   pname = "netbird-${componentName}";
   inherit version src vendorHash;
 
-  nativeBuildInputs = [ installShellFiles ] ++ lib.optionals isUi [ pkg-config ];
+  nativeBuildInputs = [ installShellFiles ] ++ lib.optional (componentName == "ui") pkg-config;
 
   buildInputs = [
     gtk3
@@ -48,7 +48,7 @@ buildGoModule {
     libx11
     libxcursor
     libxxf86vm
-  ] ++ lib.optionals isUi [
+  ] ++ lib.optionals (componentName == "ui") [
     gtk4
     libsoup_3
     webkitgtk_6_0
@@ -65,7 +65,7 @@ buildGoModule {
 
   doCheck = false;
 
-  preBuild = lib.optionalString isUi ''
+  preBuild = lib.optionalString (componentName == "ui") ''
     export PKG_CONFIG_PATH="${gtk4.dev}/lib/pkgconfig:${webkitgtk_6_0.dev}/lib/pkgconfig:${libsoup_3.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
   '';
 
@@ -97,19 +97,13 @@ buildGoModule {
   postPatch = ''
     substituteInPlace client/cmd/root.go \
       --replace-fail 'unix:///var/run/netbird.sock' 'unix:///var/run/netbird/sock'
-  '' + lib.optionalString isUi ''
+  '' + lib.optionalString (componentName == "ui") ''
     substituteInPlace client/ui/grpc.go \
       --replace-fail 'unix:///var/run/netbird.sock' 'unix:///var/run/netbird/sock'
 
-    # create frontend/dist for //go:embed all:frontend/dist
+    # create placeholder frontend/dist for //go:embed all:frontend/dist
     mkdir -p client/ui/frontend/dist
-    cat > client/ui/frontend/dist/index.html << 'EOF'
-<!doctype html>
-<html lang="en">
-<head><meta charset="UTF-8"><title>NetBird</title></head>
-<body><div id="app"></div></body>
-</html>
-EOF
+    touch client/ui/frontend/dist/.gitkeep
   '';
 
   postInstall =
@@ -122,11 +116,11 @@ EOF
         --fish <($out/bin/${component.binaryName} completion fish) \
         --zsh <($out/bin/${component.binaryName} completion zsh)
     ''
-    + lib.optionalString (stdenv.hostPlatform.isLinux && isUi) ''
+    + lib.optionalString (stdenv.hostPlatform.isLinux && componentName == "ui") ''
       install -Dm644 "$src/client/ui/assets/netbird-systemtray-connected.png" "$out/share/icons/hicolor/256x256/apps/netbird.png"
       install -Dm644 "$src/client/ui/build/linux/netbird.desktop" "$out/share/applications/netbird.desktop"
       substituteInPlace $out/share/applications/netbird.desktop \
-        --replace-fail "Exec=env WEBKIT_DISABLE_DMABUF_RENDERER=1 /usr/bin/netbird-ui" "Exec=${component.binaryName}"
+        --replace-fail "/usr/bin/netbird-ui" "${component.binaryName}"
     '';
 
   nativeInstallCheckInputs = lib.optionals component.hasVersionCheck [
